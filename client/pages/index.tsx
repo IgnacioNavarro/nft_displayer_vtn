@@ -1,7 +1,32 @@
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
+import { use, useEffect, useState } from 'react';
+
 
 export default function Home() {
+
+
+  const [nfts, setNfts] = useState([]);
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+
+
+      console.log("Fetching data");
+
+      const response = await fetch('http://localhost:3001/api/nfts',{
+        method: 'POST',
+      });
+      const data = await response.json();
+      console.log("data", data);
+
+      setNfts(data);
+    }
+    fetchData();
+  }
+  , []);
+
 
 
 
@@ -24,10 +49,28 @@ export default function Home() {
 
         <div className={styles.grid}>
 
-          <div className={styles.card}>
-            <h3>Features &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </div>
+
+          
+          {nfts.map((nft:any, index) => {
+            return (
+              <div key={index} className={styles.card}>
+                <h3>{nft.name} #{index}</h3>
+                <img src={nft.image} alt="NFT image" />
+                <p>Description: {nft.description}</p>
+                <div>
+                  <p>Attributes:</p>
+                  <ul>
+                    {nft.attributes.map((attribute:any, index:any) => {
+                      return (
+                        <li key={index}>{attribute.trait_type}: {attribute.value}</li>
+                      )
+                    })}
+                  </ul>
+                </div>
+
+              </div>
+            )
+          })}
 
         </div>
       </main>
